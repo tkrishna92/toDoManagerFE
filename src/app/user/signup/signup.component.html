@@ -1,1 +1,88 @@
-<p>signup works!</p>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+                <a class="navbar-brand" href="/">Todo Manager App</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                    data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" (click)="goToSignin()">Sign in</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <div class = "row" style = "padding-left : 25vw;">
+        <div class = "col-md-6">
+            <form>
+                <div class= "form-group">
+                    <h4>sign up to create a toDo Manager app account</h4>
+                    <label>First Name</label>
+                    <input type = "text" name ="firstName" class ="form-control" [(ngModel)]="firstName"
+                    #firstname = "ngModel" placeholder="First Name" required autofocus>
+                </div>
+                <div [hidden]= "firstname.valid || firstname.pristine" class = "alert alert-danger">please enter first name</div>
+
+                <div class= "form-group">                   
+                    <label>Last Name</label>
+                    <input type = "text" name ="lastName" class ="form-control" [(ngModel)]="lastName"
+                    #lastname = "ngModel" placeholder="Last Name" required autofocus>
+                </div>
+                <div [hidden]= "lastname.valid || lastname.pristine" class = "alert alert-danger">please enter last name</div>
+
+                <div class= "form-group">
+                    
+                    <label>Mobile Number</label>
+                    <input type = "text" name ="mobileNumber" class ="form-control" [(ngModel)]="mobileNumber"
+                    #mobilenumber = "ngModel" placeholder="mobile number" required autofocus>
+                </div>
+                <div [hidden]= "mobilenumber.valid || mobilenumber.pristine" class = "alert alert-danger">please enter mobile number</div>
+
+                <div class= "form-group">                    
+                    <label>country</label>
+                    <input type="text" name ="countryName" class ="form-control" [(ngModel)]="countryName" (change)="getCountryCode(countryName)"
+                    #countryname = "ngModel" placeholder="country Name" required autofocus list= "countries">
+                    <datalist id = "countries">
+                        <option *ngFor="let country of countryList" >{{country}}</option>
+                    </datalist>                    
+                </div>
+                <div [hidden]= "countryname.valid || countryname.pristine" class = "alert alert-danger">please enter country code</div>
+
+                <div>
+                    <label>phone code</label>
+                    <output type ="text" class="form-control" name = "countryCode" [(ngModel)]="countryCode" value="{{countryPhoneCode}}"
+                    #countrycode = "ngModel" placeholder="country phone code" list = "countrycodes">
+                    </output>
+                    
+                </div>
+                <div [hidden]= "countrycode.valid || countrycode.pristine" class = "alert alert-danger">please select a country for country phone code</div>
+
+
+                <div class= "form-group">
+                    
+                    <label>email id</label>
+                    <input type = "text" name ="email" class ="form-control" [(ngModel)]="email"
+                    #emailid = "ngModel" placeholder="email" required autofocus>
+                </div>
+                <div [hidden]= "emailid.valid || emailid.pristine" class = "alert alert-danger">please enter your email Id</div>
+                <div class= "form-group">
+                    
+                    <label>password</label>
+                    <input type = "password" name ="password" class ="form-control" [(ngModel)]="password"
+                    #passWord = "ngModel" placeholder="password" required autofocus>
+                </div>
+                <div [hidden]= "passWord.valid || passWord.pristine" class = "alert alert-danger">please enter password</div>
+            </form>
+            <div>
+                <button class="btn btn-lg btn-primary btn-block" type="button" (click)="signupFunction()">Sign Up</button>
+            </div>
+        </div>
+    </div>
+</div>

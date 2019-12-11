@@ -1,1 +1,44 @@
-<p>login works!</p>
+<div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+                    <a class="navbar-brand" href="/">Todo Manager App</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse"
+                        data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" (click)="gotoSignup()">login</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    
+        <div class = "row" style = "padding-left : 25vw;">
+            <div class = "col-md-6">
+                <form>    
+                    <div class= "form-group">                        
+                        <label>email id</label>
+                        <input type = "text" name ="email" class ="form-control" [(ngModel)]="email"
+                        #emailid = "ngModel" placeholder="email" required autofocus>
+                    </div>
+                    <div [hidden]= "emailid.valid || emailid.pristine" class = "alert alert-danger">please enter your email Id</div>
+                    <div class= "form-group">
+                        
+                        <label>password</label>
+                        <input type = "password" name ="password" class ="form-control" [(ngModel)]="password"
+                        #passWord = "ngModel" placeholder="password" required autofocus>
+                    </div>
+                    <div [hidden]= "passWord.valid || passWord.pristine" class = "alert alert-danger">please enter password</div>
+                </form>
+                <div>
+                    <button class="btn btn-lg btn-primary btn-block" type="button" (click)="loginFunction()">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>

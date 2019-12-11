@@ -21,6 +21,10 @@ import { UserModule } from './user/user.module';
 import { TodoModule } from './todo/todo.module';
 import { SharedModule } from './shared/shared.module';
 import { LoginComponent } from './user/login/login.component';
+import { UsersService } from './users.service';
+import { TodoService } from './todo.service';
+import { FriendsService } from './friends.service';
+
 
 
 
@@ -45,11 +49,8 @@ import { LoginComponent } from './user/login/login.component';
       {path : '**', component : LoginComponent}
     ])
 
-    
-
-
   ],
-  providers: [HttpClientModule, CookieService],
+  providers: [HttpClientModule, CookieService, UsersService, TodoService, FriendsService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
