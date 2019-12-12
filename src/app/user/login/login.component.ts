@@ -23,6 +23,10 @@ export class LoginComponent implements OnInit {
     this.router.navigate(['signup']);
   }
 
+  public forgotPassword(): any {
+    this.router.navigate(['forgotpassword']);
+  }
+
   public loginFunction():any {
     let data = {
       email : this.email,

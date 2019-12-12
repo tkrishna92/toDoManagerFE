@@ -1,0 +1,9 @@
+.rowPadding {
+    padding : 0 2.5vw 0 2.5vw;
+    float : right;
+}
+
+.friendRequest{
+    background-color: transparent;
+    border: none;
+}

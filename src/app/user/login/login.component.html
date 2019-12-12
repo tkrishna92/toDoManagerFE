@@ -37,7 +37,9 @@
                     <div [hidden]= "passWord.valid || passWord.pristine" class = "alert alert-danger">please enter password</div>
                 </form>
                 <div>
-                    <button class="btn btn-lg btn-primary btn-block" type="button" (click)="loginFunction()">Sign Up</button>
+                    <button class="btn btn-primary" style ="margin-right: 10px;" type="button" (click)="loginFunction()">login</button>
+                
+                    <button class= "btn btn-primary" style ="margin-left: 10px;" type="button" (click)="forgotPassword()">forgot password?</button>
                 </div>
             </div>
         </div>

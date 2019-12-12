@@ -11,6 +11,9 @@ import { AppComponent } from './app.component';
  import {HttpClientModule} from '@angular/common/http';
  import {FormsModule} from '@angular/forms';
  import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+
+// external modules
+
  import {ToastrModule} from 'ngx-toastr';
  import {CookieService} from 'ngx-cookie-service';
 
@@ -24,6 +27,7 @@ import { LoginComponent } from './user/login/login.component';
 import { UsersService } from './users.service';
 import { TodoService } from './todo.service';
 import { FriendsService } from './friends.service';
+
 
 
 
