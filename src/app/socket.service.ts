@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 
 import * as io from 'socket.io-client';
-import {Observable} from 'rxjs';
+import {Observable, observable} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
 import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from '@angular/common/http'
 import {CookieService} from 'ngx-cookie-service';
@@ -24,7 +24,16 @@ export class SocketService {
   }
 
   // handling error event from socket
-  
+  public socketError = ()=>{
+    return Observable.create((observer)=>{
+      this.socket.on('error-occurred', (data)=>{
+        console.log("error occurred in the socket service :");
+        console.log(data);
+        observer.next(data);
+      })
+    })
+  }
+
 
   // handling verifyUser event on connection
   public verifyUser = ()=>{
@@ -41,7 +50,6 @@ export class SocketService {
   public updatedOnlineUsers = ()=>{
     return Observable.create((observer)=>{
       this.socket.on('online-user-list', (onlineUsers)=>{
-        console.log(onlineUsers);
         observer.next(onlineUsers);
       })
     })
@@ -49,7 +57,16 @@ export class SocketService {
 
 
   // handling various events that will be occurring on the userId
-
+  public eventOnUserId = ()=>{
+    return Observable.create((observer)=>{
+      let userId = this.cookies.get('userId')
+      
+      this.socket.on(userId, (data)=>{
+        console.log(data);
+        observer.next(data);
+      })
+    })
+  }
 
 
 //------------------------emiting events--------------------
@@ -57,18 +74,36 @@ export class SocketService {
   // handling emiting authToken for token verification
   public checkAuthToken = (authToken)=>{
     console.log("sending 'auth-user' event");
+    // console.log(authToken);
     this.socket.emit('auth-user', (authToken))
   }
 
-  // emiting event to get user lists
-
-  public getUserLists = (data)=>{
-
+  public getUserLists = (request)=>{
+    console.log("sending get user list event")
+    console.log(request);
+    this.socket.emit('get-user-lists', request)
   }
 
+  public getUserFriends = (request)=>{
+    console.log("sending get-friends event");
+    this.socket.emit('get-friends', request);
+  }
 
+ public joinFriendsRooms = (userId)=>{
+   console.log("sending join-friends-rooms event")
+   this.socket.emit('join-friends-rooms', userId)
+ }
 
+ public getFriendRequestCount = (userId)=>{
+   console.log("get friend request count event emitted");
+   this.socket.emit('friend-request-count', (userId));
+ }
 
+ public getTodoAppUsers = (userId)=>{
+   console.log("get all the todo app users event emitted");
+   this.socket.emit('get-todo-users', (userId));
+ }
+ 
 }
 
 
