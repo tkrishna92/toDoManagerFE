@@ -1,24 +1,37 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { UsersService } from 'src/app/users.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { SocketService } from 'src/app/socket.service';
-import { faUserFriends } from '@fortawesome/free-solid-svg-icons';
+import { faUserFriends, faPlusCircle, faEdit, faTrash, faUndo, faRedo, faEllipsisV, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FriendsService } from 'src/app/friends.service';
+import { TodoService } from 'src/app/todo.service';
 
 
 @Component({
   selector: 'app-todo-manager',
   templateUrl: './todo-manager.component.html',
-  styleUrls: ['./todo-manager.component.css']
+  styleUrls: ['./todo-manager.component.css'],
+  providers : [SocketService]
 })
 
 
 
 export class TodoManagerComponent implements OnInit {
 
+  @ViewChild('scrollMe', {read: ElementRef, static: true} )
+
+   public scrollMe: ElementRef;
+
   public faFriend = faUserFriends;
+  public plus = faPlusCircle;
+  public editIcon = faEdit;
+  public recycleIcon = faTrash;
+  public undoIcon = faUndo;
+  public redoIcon = faRedo;
+  public optionsIcon = faEllipsisV;
+  public markAsDone = faCheck;
 
   public authToken : string;
   public userInfo : any;
@@ -33,9 +46,11 @@ export class TodoManagerComponent implements OnInit {
   public toDoUsersList : any = [];
   public friendRequests : any = [];
   public requestCount : string;
+  public listTitle : string;
+  public listDescription : string;
 
 
-  constructor(private cookies : CookieService, private _userHttp : UsersService, private _friendHttp: FriendsService, private toaster: ToastrService, private router : Router, private socketService : SocketService) { }
+  constructor(private cookies : CookieService, private _todoHttp : TodoService, private _userHttp : UsersService, private _friendHttp: FriendsService, private toaster: ToastrService, private router : Router, private socketService : SocketService) { }
 
   ngOnInit() {
     this.authToken = this.cookies.get('authToken');
@@ -53,6 +68,7 @@ export class TodoManagerComponent implements OnInit {
     this.joinFriendsRoom();
     this.getFriendRequestCount();
     this.getTodoUsers();
+    this.getFriendNotifications();
 
     // error handler
     this.socketErrorHandler();
@@ -65,7 +81,15 @@ export class TodoManagerComponent implements OnInit {
   public socketErrorHandler = ()=>{
     this.socketService.socketError().subscribe(
       data=>{
-        console.log("error occurred in socket :"+data)
+        if(data.error = "invalid token provided" && data.status== "500"){
+          console.log("error occurred in socket :"+data)
+          console.log(data);
+          this.router.navigate(['/'])
+        }else if(data.userList && data.userId == this.userId){
+          console.log("error occurred in socket :"+data)
+          console.log(data);
+          this.toaster.warning(data.userList.message);
+        }
       }      
     )
   }
@@ -100,7 +124,7 @@ export class TodoManagerComponent implements OnInit {
   public getUserOpenLists = (listOwner)=>{
     let request = {
       userId : this.userId,
-      listOwner : listOwner,
+      listOwner : listOwner || this.userId,
       listStatus : "open"
     }
     this.socketService.getUserLists(request)
@@ -143,6 +167,16 @@ export class TodoManagerComponent implements OnInit {
  }
 
 
+ // listening to friend notification action
+ public getFriendNotifications = ()=>{
+   this.socketService.friendNotification().subscribe(
+     data=>{
+       this.toaster.info(data.receiverName+data.message+data.senderName);
+     }
+   )
+ }
+
+
  // it subscribe to a range of data on the userId of the user logged in
  public getUserDataOnUserId = ()=>{
    this.socketService.eventOnUserId().subscribe(
@@ -157,14 +191,15 @@ export class TodoManagerComponent implements OnInit {
            console.log("no user lists available")
          }
        }else if(data.userFriends){
-         this.friendList = data.userFriends;
-        //  console.log(this.friendList);
+        //  console.log(data);
+         this.friendList = data.userFriends.data;
+         console.log(this.friendList);
        }else if(data.requestCount){
 
          this.requestCount = data.requestCount.data;
-         console.log(this.requestCount);
+        //  console.log(this.requestCount);
        }else if(data.todoUsers){
-         console.log(data.todoUsers);
+        //  console.log(data.todoUsers);
          this.toDoUsersList = data.todoUsers.data;
        }
      }
@@ -172,7 +207,9 @@ export class TodoManagerComponent implements OnInit {
  }
 
 
- //----------------http call functions------------------------------
+
+
+ //----------------http calls------------------------------
 
  public getPendingRequest: any = ()=>{
    this._friendHttp.CheckFriendRequests().subscribe(
@@ -185,6 +222,48 @@ export class TodoManagerComponent implements OnInit {
    )
  }
 
+ public acceptFriend: any = (data)=>{
+   this._friendHttp.acceptFriendRequest(data.friendId).subscribe(
+     data=>{
+       if(data.status == "200"){
+         this.toaster.success("friend accepted")
+         data['notificationMessage']=" is now friends with "
+         this.socketService.sendFriendNotification(data);
+       }
+     }
+   )
+ }
+
+ public logoutUser: any = ()=>{
+    this._userHttp.userLogout(this.cookies.get('authToken')).subscribe(
+      data=>{
+        console.log(data);
+        if(data.status == "200"){
+          this.toaster.success('logout success');
+          this.router.navigate(['/']);
+        }else{
+          this.toaster.warning('logout failed');
+        }
+      }
+    )
+ }
+
+ public createNewList : any = ()=>{
+
+  let data ={
+    listTitle : this.listTitle,
+    listDescription : this.listDescription
+  }
+   console.log(data);
+   this._todoHttp.createNewList(data).subscribe(
+     data=>{
+       if(data.status== "200"){
+         this.toaster.success(data.message);
+         
+       }
+     }
+   )
+ }
 
 
 }

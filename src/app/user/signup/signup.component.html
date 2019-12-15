@@ -16,23 +16,23 @@
                     </ul>
                 </div>
             </nav>
-        </div>
+        </div> 
     </div>
 
     <div class = "row" style = "padding-left : 25vw;">
         <div class = "col-md-6">
             <form>
                 <div class= "form-group">
-                    <h4>sign up to create a toDo Manager app account</h4>
+                    <h6>sign up to create a toDo Manager app account</h6>
                     <label>First Name</label>
-                    <input type = "text" name ="firstName" class ="form-control" [(ngModel)]="firstName"
+                    <input type = "text" name ="firstName" class ="form-control inputForm" [(ngModel)]="firstName"
                     #firstname = "ngModel" placeholder="First Name" required autofocus>
                 </div>
                 <div [hidden]= "firstname.valid || firstname.pristine" class = "alert alert-danger">please enter first name</div>
 
                 <div class= "form-group">                   
                     <label>Last Name</label>
-                    <input type = "text" name ="lastName" class ="form-control" [(ngModel)]="lastName"
+                    <input type = "text" name ="lastName" class ="form-control inputForm" [(ngModel)]="lastName"
                     #lastname = "ngModel" placeholder="Last Name" required autofocus>
                 </div>
                 <div [hidden]= "lastname.valid || lastname.pristine" class = "alert alert-danger">please enter last name</div>
@@ -40,14 +40,14 @@
                 <div class= "form-group">
                     
                     <label>Mobile Number</label>
-                    <input type = "text" name ="mobileNumber" class ="form-control" [(ngModel)]="mobileNumber"
+                    <input type = "text" name ="mobileNumber" class ="form-control inputForm" [(ngModel)]="mobileNumber"
                     #mobilenumber = "ngModel" placeholder="mobile number" required autofocus>
                 </div>
                 <div [hidden]= "mobilenumber.valid || mobilenumber.pristine" class = "alert alert-danger">please enter mobile number</div>
 
                 <div class= "form-group">                    
                     <label>country</label>
-                    <input type="text" name ="countryName" class ="form-control" [(ngModel)]="countryName" (change)="getCountryCode(countryName)"
+                    <input type="text" name ="countryName" class ="form-control inputForm" [(ngModel)]="countryName" (change)="getCountryCode(countryName)"
                     #countryname = "ngModel" placeholder="country Name" required autofocus list= "countries">
                     <datalist id = "countries">
                         <option *ngFor="let country of countryList" >{{country}}</option>
@@ -57,7 +57,7 @@
 
                 <div>
                     <label>phone code</label>
-                    <output type ="text" class="form-control" name = "countryCode" [(ngModel)]="countryCode" value="{{countryPhoneCode}}"
+                    <output type ="text" class="form-control" style="width : 20vw;" name = "countryCode" [(ngModel)]="countryCode" value="{{countryPhoneCode}}"
                     #countrycode = "ngModel" placeholder="country phone code" list = "countrycodes">
                     </output>
                     
@@ -68,20 +68,20 @@
                 <div class= "form-group">
                     
                     <label>email id</label>
-                    <input type = "text" name ="email" class ="form-control" [(ngModel)]="email"
+                    <input type = "text" name ="email" class ="form-control inputForm" [(ngModel)]="email"
                     #emailid = "ngModel" placeholder="email" required autofocus>
                 </div>
                 <div [hidden]= "emailid.valid || emailid.pristine" class = "alert alert-danger">please enter your email Id</div>
                 <div class= "form-group">
                     
                     <label>password</label>
-                    <input type = "password" name ="password" class ="form-control" [(ngModel)]="password"
+                    <input type = "password" name ="password" class ="form-control inputForm" [(ngModel)]="password"
                     #passWord = "ngModel" placeholder="password" required autofocus>
                 </div>
                 <div [hidden]= "passWord.valid || passWord.pristine" class = "alert alert-danger">please enter password</div>
             </form>
             <div>
-                <button class="btn btn-lg btn-primary btn-block" type="button" (click)="signupFunction()">Sign Up</button>
+                <button class="btn btn-lg btn-primary" type="button" (click)="signupFunction()">Sign Up</button>
             </div>
         </div>
     </div>

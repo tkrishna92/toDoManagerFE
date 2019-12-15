@@ -5,3 +5,11 @@
 .ng-invalid:not(form){
     border-left : 2px solid rgb(255, 81, 81);
 }
+
+.inputForm{
+    width: auto;
+}
+
+.form-group{
+    margin-top: 2vh;
+}

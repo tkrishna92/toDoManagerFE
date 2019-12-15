@@ -62,7 +62,7 @@ export class UsersService {
   // for logout
   public userLogout(data) : any{
     
-    return this._http.put(`${this.userUrl}/logout?authToken=${data.authToken}`,(data))
+    return this._http.put(`${this.userUrl}/logout?authToken=${data}`,(data))
   }
 
 

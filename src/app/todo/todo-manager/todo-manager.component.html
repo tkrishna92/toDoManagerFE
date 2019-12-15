@@ -1,56 +1,248 @@
-<div class= "container-fluid">
-    <div class= "row" >
-        <div class= "col-12">
-            <nav class="navbar navbar-expand-md navbar-light bg-light">
+
+<div class="container-fluid content">
+    <div class="row">
+        <div class="col-12 ">
+            <nav class="navbar navbar-expand-sm navbar-light bg-light">
                 <a class="navbar-brand" href="todo">ToDo Manager</a>
-                <span class="ml-auto" style = "margin-right: 2.5vw;"><i>{{userName}}</i></span>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    
-
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav">
-                            <div class="dropdown"  id="navbarDropdown">
-                                <button class="btn dropleft friendRequest" type="button" id="friendRequests" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <fa-icon [icon]="faFriend"></fa-icon>
-                                    <span class="badge badge-pill badge-danger" (click)="getPendingRequest()">{{requestCount}}</span>
-                                </button>
-                                <div class="dropdown-menu" style = "text-align: left;" aria-labelledby="friendRequests">
-                                    <a *ngFor="let request of friendRequests" class="dropdown-item" type="button" id="accept" data-toggle="dropdown" href="#">
-                                        {{request.friendName}}<span style = "margin-left: 2vw;" class="btn btn-primary">accept</span>
-                                        <div class="dropdown-divider"></div>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="dropdown ml-auto" id="navbarDropdown">
-                                <button aria-labelledby="account" type="button" style="margin: 0;" class="btn btn-primary" (click)="logout()" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                logout
-                                </button>                    
-                            </div>
-                        
-                        
-                        
-                            
-
-
-                        </ul>
+                <span class="ml-auto" style="margin-right: 2.5vw;"><i>{{userName}}</i></span>
+                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                    data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse " id="navbarSupportedContent">
+                    <div class="col dropdown ml-auto" style="text-align: center;" id="navbarDropdown">
+                        <button class="btn friendRequest" type="button" id="friendRequests" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                            <fa-icon [icon]="faFriend"></fa-icon>
+                            <span class="badge badge-pill badge-danger"
+                                (click)="getPendingRequest()">{{requestCount}}</span>
+                        </button>
+                        <div class="dropdown-menu" style="text-align: left;" aria-labelledby="friendRequests">
+                            <a *ngFor="let request of friendRequests" class="dropdown-item" type="button" id="accept"
+                                data-toggle="dropdown">
+                                {{request.friendName}}<span style="margin-left: 2vw;"
+                                    class="btn btn-primary" (click) = "acceptFriend(request)">accept</span>
+                                <div class="dropdown-divider"></div>
+                            </a>
+                        </div>
                     </div>
-
-
-
-
-
-
-                        
-
-
-
-
-
-                
-            
+                    <div class="col" style="text-align: center;">
+                        <button aria-labelledby="account" type="button" class="btn btn-primary" (click)="logoutUser()"
+                            id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            logout
+                        </button>
+                    </div>
+                </div>
             </nav>
         </div>
     </div>
+
+
+    <!-- --------------first element start--------------- -->
+    <div class="container-fluid" style = "margin-top: 8px;">
+    <div class="row">
+        <div class="col-4 firstElement">
+            <div class ="row divider" style="padding : 4px;" >
+                <button class="col-5 buttonHeight button" style="border-right: 1px solid grey" (click)="getUserOpenLists(userId)">My Todo's</button>
+                <!-- <button class="">Friends Todo's</button> -->
+                
+                    <button class="col-7 buttonHeight button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Friends Todo's
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      <a class="dropdown-item divider"  *ngFor="let friend of friendList" (click)="getUserOpenLists(friend.friendId)">{{friend.friendName}}</a>
+                    </div>
+                  
+            </div>
+            <div class ="row divider" style="padding : 10px 0 15px 0;" >
+            
+                <div class="col-12" >
+                    <h5 style="margin-bottom: 10px;" >pending todo lists</h5>
+                </div>
+                <div #scrollMe [scrollTop]="0" class="openList" >
+                <div class="col-12 d-flex justify-content-start">
+                    <button type="button" class="createListButton" data-toggle="modal" data-target="#exampleModal">
+                        <fa-icon [icon]="plus"></fa-icon>&nbsp;&nbsp;create new list
+                      </button>
+                      
+                      <!-- Modal -->
+                      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="exampleModalLabel">Create New List</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                                <form>    
+                                    <div class= "form-group" >                        
+                                        <label>List Title</label>
+                                        <input type = "text" name ="listTitle" class ="form-control inputForm" [(ngModel)]="listTitle"
+                                        #listtitle = "ngModel" placeholder="list title here" required autofocus>
+                                    </div>
+                                    <div [hidden]= "listtitle.valid || listtitle.pristine" class = "alert alert-danger">please enter a list title</div>
+                                    <div class= "form-group">
+                                        
+                                        <label>List Description</label>
+                                        <input type = "text" name ="listDescription" class ="form-control inputForm " [(ngModel)]="listDescription"
+                                        #listdescription = "ngModel" placeholder="description of the list" required autofocus>
+                                    </div>
+                                    <div [hidden]= "listdescription.valid || listdescription.pristine" class = "alert alert-danger">please enter password</div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                              <button class="btn btn-primary" style ="margin-right: 10px;" type="button" (click)="createNewList()">create</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                </div> 
+                <div *ngFor="let list of userLists" class= "col-12">
+                    <div class="row" style="padding-left: 10px;" >  
+                        <div class="col-9 list" style="overflow: scroll;">                            
+                            <div>                                        
+                                <a class="listTitle">{{list.listTitle}}</a>
+                            </div>
+                            
+                        </div>
+                        <div class = "col-2" style="padding-left: 0;">
+                            <div class="btn-group">
+                                <button type="button" style="padding-left: 5px;" class="btn dropdown-toggle listActions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <fa-icon [icon]="optionsIcon"></fa-icon>
+                                </button>
+                                <div class="dropdown-menu">
+                                  <a class="dropdown-item" href="#"><fa-icon [icon]="editIcon"></fa-icon>edit list</a>
+                                  <a class="dropdown-item" href="#"><fa-icon [icon]="recycleIcon"></fa-icon>delete list</a>
+                                  <a class="dropdown-item" href="#"><fa-icon [icon]="undoIcon"></fa-icon>undo</a>
+                                  <a class="dropdown-item" href="#"><fa-icon [icon]="redoIcon"></fa-icon>redo</a>
+                                  <a class="dropdown-item" href="#"><fa-icon [icon]="markAsDone"></fa-icon>list done</a>
+                                </div>
+                            </div>
+                        </div>                       
+                    </div>
+                </div>
+                </div>
+            </div> 
+
+
+            <div class ="row divider" style="padding : 10px 0 15px 0;"  >                
+                <div class="col-8" >
+                    <h5 style="margin-bottom: 10px;">done todo lists</h5>
+                </div>
+                <div #scrollMe [scrollTop]="0" class="openList" >
+                <div *ngFor="let oldList of userOldLists" class= "col-12">
+                    <div class="row" style="padding-left: 10px;" >  
+                        <div class="col-9 list" style="overflow: scroll;">                            
+                            <div>                                        
+                                <a class="listTitle"> {{oldList.listTitle}}</a>
+                            </div>
+                            
+                        </div>
+                        <div class = "col-2" style="padding-left: 0;">
+                            <div class="btn-group">
+                                <button type="button" style="padding-left: 5px;" class="btn dropdown-toggle listActions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <fa-icon [icon]="optionsIcon"></fa-icon>
+                                </button>
+                                <div class="dropdown-menu">
+                                  <a class="dropdown-item" href="#"><fa-icon [icon]="editIcon"></fa-icon>edit list</a>
+                                  <a class="dropdown-item" href="#"><fa-icon [icon]="recycleIcon"></fa-icon>delete list</a>
+                                  <a class="dropdown-item" href="#"><fa-icon [icon]="undoIcon"></fa-icon>undo</a>
+                                  <a class="dropdown-item" href="#"><fa-icon [icon]="redoIcon"></fa-icon>redo</a>
+                                  <a class="dropdown-item" href="#"><fa-icon [icon]="markAsDone"></fa-icon>re open list</a>
+                                </div>
+                            </div>
+                        </div>                       
+                    </div>
+                    
+                </div>
+                </div>
+            </div>  
+                     
+                              
+        </div>
+
+        <!-- --------------first element end--------------- -->
+
+
+
+        <!-- --------------second element start--------------- -->
+        <div class="col-5 secondElement">
+            listName - ListItems
+        </div>
+
+        <!-- ----------------second element end -------------- -->
+
+
+
+
+
+        <!-- ----------------third element start -------------- -->
+        <div class="col-3 thirdElement">
+            <!-- <div class ="row divider" style="padding : 4px;" >
+                <button class="col-5 buttonHeight button" style="border-right: 1px solid grey">All</button>
+                <button class="col-7 buttonHeight button">Friends</button>
+            </div> -->
+            <div class ="row divider" style="padding : 10px 0 15px 0;" >
+            
+                <div class="col-12" >
+                    <h5 style="margin-bottom: 10px;" >Online Users</h5>
+                </div>
+                <div #scrollMe [scrollTop]="0" class="openList" >
+                <!-- <div class="col-12 d-flex justify-content-start">                    
+                    <button class="createListButton"><fa-icon [icon]="plus"></fa-icon>&nbsp;&nbsp;create new list</button>
+                </div>  -->
+                <div *ngFor="let friend of friendList" class= "col-12">
+                    <div class="row" style="padding-left: 10px;" >  
+                        <div class="col-9 list" style="overflow: scroll;">                            
+                            <div>                                        
+                                <a class="listTitle">{{friend.friendName}}</a>
+                            </div>                            
+                        </div>                                       
+                    </div>
+                </div>
+                </div>
+            </div> 
+
+
+            <div class ="row divider" style="padding : 10px 0 15px 0;"  >                
+                <div class="col-8" >
+                    <h5 style="margin-bottom: 10px;">done todo lists</h5>
+                </div>
+                <div #scrollMe [scrollTop]="0" class="openList" >
+                <div *ngFor="let oldList of userOldLists" class= "col-12">
+                    <div class="row" style="padding-left: 10px;" >  
+                        <div class="col-9 list" style="overflow: scroll;">                            
+                            <div>                                        
+                                <a class="listTitle"> {{oldList.listTitle}}</a>
+                            </div>
+                            
+                        </div>
+                        <div class = "col-2" style="padding-left: 0;">
+                            <div class="btn-group">
+                                <button type="button" style="padding-left: 5px;" class="btn dropdown-toggle listActions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <fa-icon [icon]="optionsIcon"></fa-icon>
+                                </button>
+                                <div class="dropdown-menu">
+                                  <a class="dropdown-item" href="#"><fa-icon [icon]="editIcon"></fa-icon>edit list</a>
+                                  <a class="dropdown-item" href="#"><fa-icon [icon]="recycleIcon"></fa-icon>delete list</a>
+                                  <a class="dropdown-item" href="#"><fa-icon [icon]="undoIcon"></fa-icon>undo</a>
+                                  <a class="dropdown-item" href="#"><fa-icon [icon]="redoIcon"></fa-icon>redo</a>
+                                  <a class="dropdown-item" href="#"><fa-icon [icon]="markAsDone"></fa-icon>re open list</a>
+                                </div>
+                            </div>
+                        </div>                       
+                    </div>
+                    
+                </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+    </div>
+
+
 </div>
