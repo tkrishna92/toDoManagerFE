@@ -48,6 +48,8 @@ export class TodoManagerComponent implements OnInit {
   public requestCount : string;
   public listTitle : string;
   public listDescription : string;
+  public currentList : any = [];
+  public currentItem : any = [];
 
 
   constructor(private cookies : CookieService, private _todoHttp : TodoService, private _userHttp : UsersService, private _friendHttp: FriendsService, private toaster: ToastrService, private router : Router, private socketService : SocketService) { }
@@ -61,14 +63,15 @@ export class TodoManagerComponent implements OnInit {
 
     this.verifyUser();
     this.UpdatedOnlineUsers();
-    this.getUserOpenLists(this.userId);
+    this.getUserOpenLists();
     this.getUserOldLists();
-    this.getUserFriends()
+    this.getUserFriends();
     this.getUserDataOnUserId();
     this.joinFriendsRoom();
     this.getFriendRequestCount();
     this.getTodoUsers();
     this.getFriendNotifications();
+    this.getTodoActionNotifications();
 
     // error handler
     this.socketErrorHandler();
@@ -81,14 +84,25 @@ export class TodoManagerComponent implements OnInit {
   public socketErrorHandler = ()=>{
     this.socketService.socketError().subscribe(
       data=>{
+        console.log(data);
         if(data.error = "invalid token provided" && data.status== "500"){
           console.log("error occurred in socket :"+data)
           console.log(data);
           this.router.navigate(['/'])
-        }else if(data.userList && data.userId == this.userId){
+        }else if(data.userList && data.userId == this.userId && data.request.listStatus=="open"){
           console.log("error occurred in socket :"+data)
           console.log(data);
           this.toaster.warning(data.userList.message);
+          this.userLists = [];
+          this.listOwner = data.request.listOwner;
+          console.log(this.listOwner);
+        }else if(data.userList && data.userId == this.userId && data.request.listStatus=="done"){
+          console.log("error occurred in socket :"+data)
+          console.log(data);
+          this.toaster.info(`${data.userList.message} that are done`);
+          this.userOldLists = [];
+          this.listOwner = data.request.listOwner;
+          console.log(this.listOwner);
         }
       }      
     )
@@ -120,18 +134,30 @@ export class TodoManagerComponent implements OnInit {
   }
 
 
-  //get the selected user's lists that are of status "open"
-  public getUserOpenLists = (listOwner)=>{
+  //get the selected user's lists that are of status "open" on login
+  public getUserOpenLists = ()=>{
     let request = {
       userId : this.userId,
-      listOwner : listOwner || this.userId,
+      listOwner : this.userId,
       listStatus : "open"
     }
     this.socketService.getUserLists(request)
+    this.listOwner = this.userId;
+  }
+
+  public getSelectedUserOpenLists = (listOwner)=>{
+    let request = {
+      userId : this.userId,
+      listOwner : listOwner,
+      listStatus : "open"
+    }
+    this.socketService.getUserLists(request)
+    this.listOwner = listOwner;
   }
 
   // get the user's old lists with status "done"
   public getUserOldLists = ()=>{
+    
     let request = {
       userId : this.userId,
       listOwner : this.userId,
@@ -176,6 +202,22 @@ export class TodoManagerComponent implements OnInit {
    )
  }
 
+ // listening to toDo action notifications
+  
+ public getTodoActionNotifications = ()=>{
+   this.socketService.toDoActionNofitication().subscribe(
+     data=>{
+       console.log(data);
+       this.toaster.info(data.message);
+       let request = {
+        userId : this.userId,
+        listOwner : this.listOwner,
+        listStatus : "open"
+      }
+      this.socketService.getUserLists(request)
+     }
+   )
+ }
 
  // it subscribe to a range of data on the userId of the user logged in
  public getUserDataOnUserId = ()=>{
@@ -188,7 +230,9 @@ export class TodoManagerComponent implements OnInit {
          }else if(data.requestDetails.listStatus== "done"){
            this.userOldLists = data.userList.data;           
          }else {
+           console.log(data);
            console.log("no user lists available")
+           
          }
        }else if(data.userFriends){
         //  console.log(data);
@@ -209,8 +253,42 @@ export class TodoManagerComponent implements OnInit {
 
 
 
- //----------------http calls------------------------------
+ //---------------- functions used in http calls------------------------------
 
+
+
+ public getCurrentList: any = (listId, listOwner)=>{
+  console.log(listId);
+  let data = {
+    listId : listId,
+    listOwnerId : listOwner
+  }
+  this._todoHttp.getListDetails(data).subscribe(
+    data=>{
+      if(data.status=="200"){
+        this.currentList = data.data;
+      }else{
+        this.toaster.warning(data.message+"error editing the list")
+      }
+    }
+  )
+}
+
+public makeGetUserListsRequests: any = ()=>{
+    let request = {
+    userId : this.userId,
+    listOwner : this.listOwner,
+    listStatus : "open"
+  }
+  this.socketService.getUserLists(request)
+}
+
+
+
+// ----------------------- http calls-------------------------
+
+
+// ------friend related http calls----------------------------
  public getPendingRequest: any = ()=>{
    this._friendHttp.CheckFriendRequests().subscribe(
      data=>{
@@ -234,6 +312,9 @@ export class TodoManagerComponent implements OnInit {
    )
  }
 
+
+
+ // ------user related http calls-----------------------------
  public logoutUser: any = ()=>{
     this._userHttp.userLogout(this.cookies.get('authToken')).subscribe(
       data=>{
@@ -248,22 +329,154 @@ export class TodoManagerComponent implements OnInit {
     )
  }
 
- public createNewList : any = ()=>{
+
+
+// ------todo manager related http calls-----------------------------
+
+ public createNewList: any = (listOwner)=>{
+
+  console.log(this.listOwner);
 
   let data ={
     listTitle : this.listTitle,
-    listDescription : this.listDescription
+    listDescription : this.listDescription,
+    listOwner : this.listOwner
   }
    console.log(data);
    this._todoHttp.createNewList(data).subscribe(
      data=>{
+       console.log(data);
        if(data.status== "200"){
          this.toaster.success(data.message);
-         
+         let actionData ={
+           roomId : this.userInfo.roomId,
+           userName : this.userName,
+           notificationMessage : `created a new list ${data.data.listTitle}`
+         }
+         this.socketService.sendTodoActionNotification(actionData);
+         console.log("user lists data")
+         this.makeGetUserListsRequests();
+       }else{
+         this.toaster.warning(data.message);
        }
      }
    )
  }
 
+
+ 
+
+ public editExistingList: any = (listId)=>{
+   let data = {
+     listTitle : this.listTitle,
+     listDescription : this.listDescription,
+     listOwnerId : this.listOwner,
+     listId : listId,
+     listIsHidden : false
+   }
+   console.log(data);
+   this._todoHttp.editList(data).subscribe(
+     data=>{
+       if(data.status == "200"){
+         this.toaster.success(data.message);
+         let actionData = {
+           roomId : this.userInfo.roomId,
+           userName : this.userName,
+           notificationMessage : `created a new list ${data.data.listTitle}`
+         }
+         this.socketService.sendTodoActionNotification(actionData);
+         this.makeGetUserListsRequests();
+       }else{
+         this.toaster.warning(data.message);
+       }
+     }
+   )
+ }
+
+ public deleteExistingList: any = ()=>{
+   let data = {
+     listId : this.currentList.listId,
+     listOwnerId : this.listOwner
+   }
+   this._todoHttp.deleteList(data).subscribe(
+     data=>{
+       if(data.status == "200"){
+         this.toaster.success(data.message);
+         let actionData = {
+           roomId : this.userInfo.roomId,
+           userName : this.userName,
+           notificationMessage : `deleted a list : ${this.currentList.listTitle}`
+         }
+         this.socketService.sendTodoActionNotification(actionData);
+         this.makeGetUserListsRequests();
+       }else {
+         this.toaster.warning(data.message);
+       }
+     }
+   )
+ }
+
+ public undoListAction: any = ()=>{
+   let data = {
+     listId : this.currentList.listId,
+     listOwnerId : this.listOwner
+   }
+   this._todoHttp.undoListAction(data).subscribe(
+     data=>{
+       if(data.status == "200"){
+         this.toaster.success(data.message);
+         let actionData = {
+           roomId : this.userInfo.roomId,
+           userName : this.userName,
+           notificationMessage : `did an undo action on : ${this.currentList.listTitle}`
+         }
+         this.socketService.sendTodoActionNotification(actionData);
+         this.makeGetUserListsRequests();
+       }
+     }
+   )
+ }
+
+ public redoListAction: any = ()=>{
+  let data = {
+    listId : this.currentList.listId,
+    listOwnerId : this.listOwner
+  }
+  this._todoHttp.redoListAction(data).subscribe(
+    data=>{
+      if(data.status == "200"){
+        this.toaster.success(data.message);
+        let actionData = {
+          roomId : this.userInfo.roomId,
+          userName : this.userName,
+          notificationMessage : `did an redo action on : ${this.currentList.listTitle}`
+        }
+        this.socketService.sendTodoActionNotification(actionData);
+        this.makeGetUserListsRequests();
+      }
+    }
+  )
+}
+
+public markListAsDone: any = ()=>{
+  let data = {
+    listId : this.currentList.listId,
+    listOwnerId : this.listOwner
+  }
+  this._todoHttp.redoListAction(data).subscribe(
+    data=>{
+      if(data.status == "200"){
+        this.toaster.success(data.message);
+        let actionData = {
+          roomId : this.userInfo.roomId,
+          userName : this.userName,
+          notificationMessage : `did an redo action on : ${this.currentList.listTitle}`
+        }
+        this.socketService.sendTodoActionNotification(actionData);
+        this.makeGetUserListsRequests();
+      }
+    }
+  )
+}
 
 }

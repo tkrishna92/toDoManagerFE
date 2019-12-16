@@ -18,6 +18,7 @@ export class TodoService {
     let param1 = new HttpParams()
     .set('listTitle', data.listTitle)
     .set('listDescription', data.listDescription)
+    .set('listOwner', data.listOwner)
 
     return this._http.post(`${this.todoUrl}/createNewList?authToken=${this.cookies.get('authToken')}`, param1);
   }
@@ -93,6 +94,23 @@ export class TodoService {
     return this._http.post(`${this.todoUrl}/getAllListItems?authToken=${this.cookies.get('authToken')}`, param7);
   }
 
+  public getListDetails(data): any {
+    let param14 = new HttpParams()
+    .set('listOwnerId', data.listOwnerId)
+    .set('listId', data.listId);
+
+    return this._http.post(`${this.todoUrl}/getListDetails?authToken=${this.cookies.get('authToken')}`, param14);
+
+  }
+
+  public getItemDetails(data): any {
+    let param15 = new HttpParams()
+    .set('listOwnerId', data.listOwnerId)
+    .set('itemId', data.itemId);
+
+    return this._http.post(`${this.todoUrl}/getItemDetails?authToken=${this.cookies.get('authToken')}`, param15);
+
+  }
 
  // mark an item as done
  public markItemAsDone(data): any{
@@ -127,32 +145,32 @@ export class TodoService {
 
 // undo an action on an item
 public redoItemAction(data): any{
-  let param10 = new HttpParams()
+  let param11 = new HttpParams()
   .set('itemId', data.itemId)
   .set('listOwnerId', data.listOwnerId)
 
-  return this._http.put(`${this.todoUrl}/redoAction?authToken=${this.cookies.get('authToken')}`, param10);
+  return this._http.put(`${this.todoUrl}/redoAction?authToken=${this.cookies.get('authToken')}`, param11);
 
 }
 
 
 // undo an action on an item
 public undoListAction(data): any{
-  let param10 = new HttpParams()
+  let param12 = new HttpParams()
   .set('listId', data.listId)
   .set('listOwnerId', data.listOwnerId)
 
-  return this._http.put(`${this.todoUrl}/undoListAction?authToken=${this.cookies.get('authToken')}`, param10);
+  return this._http.put(`${this.todoUrl}/undoListAction?authToken=${this.cookies.get('authToken')}`, param12);
 
 }
 
 // undo an action on an item
 public redoListAction(data): any{
-  let param10 = new HttpParams()
+  let param13 = new HttpParams()
   .set('listId', data.listId)
   .set('listOwnerId', data.listOwnerId)
 
-  return this._http.put(`${this.todoUrl}/redoListAction?authToken=${this.cookies.get('authToken')}`, param10);
+  return this._http.put(`${this.todoUrl}/redoListAction?authToken=${this.cookies.get('authToken')}`, param13);
 
 }
 

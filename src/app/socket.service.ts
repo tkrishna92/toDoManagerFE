@@ -80,6 +80,17 @@ export class SocketService {
     })
   }
 
+  //handling toDo action notifications
+  public toDoActionNofitication = ()=>{
+    return Observable.create((observer)=>{
+      this.socket.on('action-notification',(data)=>{
+        console.log("received todo action notification :")
+        console.log(data);
+        observer.next(data);
+      })
+    })
+  }
+
 
 
 //------------------------emiting events--------------------
@@ -92,8 +103,8 @@ export class SocketService {
   }
 
   public getUserLists = (request)=>{
-    // console.log("sending get user list event")
-    // console.log(request);
+    console.log("sending get user list event")
+    console.log(request);
     this.socket.emit('get-user-lists', request)
   }
 
@@ -120,11 +131,24 @@ export class SocketService {
 
 
  // emitting notification events
+
+ // emitting friend action notification event
  public sendFriendNotification = (data)=>{
    console.log("send friend request notification"+data);
    
   this.socket.emit('friend-request', data);
  }
+
+ // emitting todo action notification event
+ public sendTodoActionNotification = (data)=>{
+   console.log("send todo action notification"+data);
+  this.socket.emit("list-action", (data));
+
+ }
+
+
+
+
 }
 
 
