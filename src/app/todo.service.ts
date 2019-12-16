@@ -78,7 +78,7 @@ export class TodoService {
   public deleteList (data): any{
     let param6 = new HttpParams()
     .set('listOwnerId', data.listOwnerId)
-    .set('listId', data.listId);
+    .set('listId', data.listId)
     // .set('actionOnList', data.actionOnList) // optional to give access to only the owner of the list
 
     return this._http.post(`${this.todoUrl}/deleteList?authToken=${this.cookies.get('authToken')}`, param6);
@@ -89,7 +89,8 @@ export class TodoService {
   public getListItems(data):any{
     let param7 = new HttpParams()
     .set('listOwnerId', data.listOwnerId)
-    .set('listId', data.listId);
+    .set('listId', data.listId)
+    .set('status', data.status)
 
     return this._http.post(`${this.todoUrl}/getAllListItems?authToken=${this.cookies.get('authToken')}`, param7);
   }
@@ -97,7 +98,7 @@ export class TodoService {
   public getListDetails(data): any {
     let param14 = new HttpParams()
     .set('listOwnerId', data.listOwnerId)
-    .set('listId', data.listId);
+    .set('listId', data.listId)
 
     return this._http.post(`${this.todoUrl}/getListDetails?authToken=${this.cookies.get('authToken')}`, param14);
 
@@ -106,8 +107,8 @@ export class TodoService {
   public getItemDetails(data): any {
     let param15 = new HttpParams()
     .set('listOwnerId', data.listOwnerId)
-    .set('itemId', data.itemId);
-
+    .set('itemId', data.itemId)
+    console.log(param15);
     return this._http.post(`${this.todoUrl}/getItemDetails?authToken=${this.cookies.get('authToken')}`, param15);
 
   }
@@ -132,6 +133,26 @@ export class TodoService {
 
  }
 
+
+  // mark a list as done
+  public markListAsDone(data): any{
+    let param16 = new HttpParams()
+    .set('listId', data.listId)
+    .set('listOwnerId', data.listOwnerId)
+ 
+    return this._http.put(`${this.todoUrl}/markListAsDone?authToken=${this.cookies.get('authToken')}`, param16);
+  }
+ 
+ 
+  // mark an item as open
+  public markListAsOpen(data): any{
+    let param17 = new HttpParams()
+    .set('listId', data.listId)
+    .set('listOwnerId', data.listOwnerId)
+ 
+    return this._http.put(`${this.todoUrl}/markListAsOpen?authToken=${this.cookies.get('authToken')}`, param17);
+ 
+  }
 
  // undo an action on an item
  public undoItemAction(data): any{

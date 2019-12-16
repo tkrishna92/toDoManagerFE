@@ -9,6 +9,7 @@ import { FriendsService } from 'src/app/friends.service';
 import { TodoService } from 'src/app/todo.service';
 
 
+
 @Component({
   selector: 'app-todo-manager',
   templateUrl: './todo-manager.component.html',
@@ -48,8 +49,14 @@ export class TodoManagerComponent implements OnInit {
   public requestCount : string;
   public listTitle : string;
   public listDescription : string;
+  public title : string; // item title
+  public description : string; // item description
+  public dueDate : string; // item due date
+  public parent : string; // items parent for sub-todo-items
   public currentList : any = [];
   public currentItem : any = [];
+  public listItems : any = [];
+  public listDoneItems : any = [];
 
 
   constructor(private cookies : CookieService, private _todoHttp : TodoService, private _userHttp : UsersService, private _friendHttp: FriendsService, private toaster: ToastrService, private router : Router, private socketService : SocketService) { }
@@ -72,6 +79,7 @@ export class TodoManagerComponent implements OnInit {
     this.getTodoUsers();
     this.getFriendNotifications();
     this.getTodoActionNotifications();
+    this.getTodoItemActionNotifications();
 
     // error handler
     this.socketErrorHandler();
@@ -219,6 +227,23 @@ export class TodoManagerComponent implements OnInit {
    )
  }
 
+ // listening to toDo item action notifications
+  
+ public getTodoItemActionNotifications = ()=>{
+  this.socketService.toDoItemActionNofitication().subscribe(
+    data=>{
+      if(this.currentList.listId == data.details.listId){
+        this.toaster.info(data.message);
+        this.makeGetListItemRequests();
+        this.makeGetListDoneItemsRequests();
+      }else{
+        this.toaster.info(data.message);
+      }
+    }
+  )
+}
+
+
  // it subscribe to a range of data on the userId of the user logged in
  public getUserDataOnUserId = ()=>{
    this.socketService.eventOnUserId().subscribe(
@@ -255,7 +280,7 @@ export class TodoManagerComponent implements OnInit {
 
  //---------------- functions used in http calls------------------------------
 
-
+  //-------------- for list related actions ----------------------------------
 
  public getCurrentList: any = (listId, listOwner)=>{
   console.log(listId);
@@ -265,8 +290,11 @@ export class TodoManagerComponent implements OnInit {
   }
   this._todoHttp.getListDetails(data).subscribe(
     data=>{
+      console.log(data);
       if(data.status=="200"){
         this.currentList = data.data;
+        this.makeGetListItemRequests();
+        this.makeGetListDoneItemsRequests();
       }else{
         this.toaster.warning(data.message+"error editing the list")
       }
@@ -282,6 +310,80 @@ public makeGetUserListsRequests: any = ()=>{
   }
   this.socketService.getUserLists(request)
 }
+
+public makeGetUserDoneListsRequests: any = ()=>{
+  let request = {
+  userId : this.userId,
+  listOwner : this.listOwner,
+  listStatus : "done"
+}
+this.socketService.getUserLists(request)
+}
+
+//-------------- for item related actions ----------------------------------
+
+public getCurrentItem: any = (itemId)=>{
+  console.log(itemId);
+  let data = {
+    listId : this.currentList.listId,
+    listOwnerId : this.currentList.listOwner,
+    itemId : itemId
+  }
+
+  this._todoHttp.getItemDetails(data).subscribe(
+    data=>{
+      console.log(data);
+      if(data.status=="200"){
+        this.currentItem = data.data;
+      }else{
+        this.toaster.warning(data.message+"error editing the Item")
+      }
+    }
+  )
+}
+
+public makeGetListItemRequests: any = ()=>{
+    let request = {
+    listId : this.currentList.listId,
+    listOwnerId : this.currentList.listOwner,
+    status : "open"
+  }
+  this._todoHttp.getListItems(request).subscribe(
+    data=>{
+      
+      console.log(data);
+      if(data.status == "200"){
+        this.listItems = [];
+        this.listItems = data.data;
+        this.toaster.success(data.message);
+        console.log(this.listItems)
+      }else{
+        this.listItems = [];
+        this.toaster.warning(data.message);
+      }
+    }
+  )
+}
+
+public makeGetListDoneItemsRequests: any = ()=>{
+  let request = {
+    listId : this.currentList.listId,
+    listOwnerId : this.currentList.listOwner,
+    status : "done"
+}
+this._todoHttp.getListDetails(request).subscribe(
+  data=>{
+    console.log(data);
+    if(data.status == "200"){
+      this.listDoneItems = data.data;
+      this.toaster.info(data.message);
+    }else{
+      this.toaster.warning(data.message);
+    }
+  }
+)
+}
+
 
 
 
@@ -333,6 +435,9 @@ public makeGetUserListsRequests: any = ()=>{
 
 // ------todo manager related http calls-----------------------------
 
+
+
+// ------list http calls-----------------------------
  public createNewList: any = (listOwner)=>{
 
   console.log(this.listOwner);
@@ -409,6 +514,7 @@ public makeGetUserListsRequests: any = ()=>{
          }
          this.socketService.sendTodoActionNotification(actionData);
          this.makeGetUserListsRequests();
+         this.makeGetUserDoneListsRequests();
        }else {
          this.toaster.warning(data.message);
        }
@@ -432,7 +538,9 @@ public makeGetUserListsRequests: any = ()=>{
          }
          this.socketService.sendTodoActionNotification(actionData);
          this.makeGetUserListsRequests();
-       }
+       }else {
+        this.toaster.warning(data.message);
+      }
      }
    )
  }
@@ -449,10 +557,12 @@ public makeGetUserListsRequests: any = ()=>{
         let actionData = {
           roomId : this.userInfo.roomId,
           userName : this.userName,
-          notificationMessage : `did an redo action on : ${this.currentList.listTitle}`
+          notificationMessage : `did a redo action on : ${this.currentList.listTitle}`
         }
         this.socketService.sendTodoActionNotification(actionData);
         this.makeGetUserListsRequests();
+      }else {
+        this.toaster.warning(data.message);
       }
     }
   )
@@ -463,20 +573,89 @@ public markListAsDone: any = ()=>{
     listId : this.currentList.listId,
     listOwnerId : this.listOwner
   }
-  this._todoHttp.redoListAction(data).subscribe(
+  this._todoHttp.markListAsDone(data).subscribe(
     data=>{
       if(data.status == "200"){
         this.toaster.success(data.message);
         let actionData = {
           roomId : this.userInfo.roomId,
           userName : this.userName,
-          notificationMessage : `did an redo action on : ${this.currentList.listTitle}`
+          notificationMessage : `marked ${this.currentList.listTitle} as done`
         }
         this.socketService.sendTodoActionNotification(actionData);
         this.makeGetUserListsRequests();
+        this.makeGetUserDoneListsRequests();
+      }else {
+        this.toaster.warning(data.message);
       }
     }
   )
 }
+
+
+public markListAsOpen: any = ()=>{
+  let data = {
+    listId : this.currentList.listId,
+    listOwnerId : this.listOwner
+  }
+  this._todoHttp.markListAsOpen(data).subscribe(
+    data=>{
+      console.log(data);
+      if(data.status == "200"){
+        this.toaster.success(data.message);
+        let actionData = {
+          roomId : this.userInfo.roomId,
+          userName : this.userName,
+          notificationMessage : `re-opened ${this.currentList.listTitle}`
+        }
+        this.socketService.sendTodoActionNotification(actionData);
+        this.makeGetUserListsRequests();
+        this.makeGetUserDoneListsRequests();
+      }else {
+        this.toaster.warning(data.message);
+      }
+    }
+  )
+}
+
+
+
+// ------list http calls end-----------------------------
+
+
+// ------list item http calls start-----------------------------
+
+// create a new list item
+public createListItem: any = ()=>{
+  let data = {
+    listOwnerId : this.currentList.listOwner,
+    listId : this.currentList.listId,
+    title : this.title,
+    description : this.description,
+    dueDate : this.dueDate,
+    parent : (this.currentItem.parent)?this.currentItem.parent:"",
+  }
+  this._todoHttp.createNewListItem(data).subscribe(
+    data=>{
+      if(data.status="200"){
+        this.toaster.success(data.message);
+        let actionData = {
+          roomId : this.userInfo.roomId,
+          userName : this.userName,
+          listId : this.currentList.listId,
+          notificationMessage : `created a new item ${data.data.title} in ${this.currentList.listTitle}`
+        }
+        this.socketService.sendTodoItemActionNotification(actionData);        
+        this.makeGetListItemRequests();
+        this.makeGetListDoneItemsRequests();
+      }else{
+        this.toaster.warning(data.message);
+      }
+    }
+  )
+}
+
+
+
 
 }

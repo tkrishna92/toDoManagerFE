@@ -92,6 +92,13 @@
     border-right-style: ridge;
 }
 
+.secondElement .createItemButton{    
+    margin-top: 8px;
+    margin-bottom: 4px;
+    background-color:white;
+    border-radius: 14px;    
+    box-shadow: 1px 1px 3px 3px rgb(240, 235, 235);
+}
 
 .thirdElement{
     margin-right:0;

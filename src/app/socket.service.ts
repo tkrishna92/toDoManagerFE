@@ -92,6 +92,17 @@ export class SocketService {
   }
 
 
+  //handling toDo item action notifications
+  public toDoItemActionNofitication = ()=>{
+    return Observable.create((observer)=>{
+      this.socket.on('item-action-notification',(data)=>{
+        console.log("received todo item action notification :")
+        console.log(data);
+        observer.next(data);
+      })
+    })
+  }
+
 
 //------------------------emiting events--------------------
 
@@ -146,6 +157,12 @@ export class SocketService {
 
  }
 
+ // emitting todo item action notification event
+ public sendTodoItemActionNotification = (data)=>{
+  console.log("send todo item action notification"+data);
+ this.socket.emit("item-action", (data));
+
+}
 
 
 
