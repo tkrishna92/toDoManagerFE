@@ -1,7 +1,7 @@
-<div class="container-fluid content">
+<div class="container-fluid" style="background-color: rgb(102, 100, 100);">
     <div class="row">
-        <div class="col-12 ">
-            <nav class="navbar navbar-expand-sm navbar-light bg-light">
+        <div class="col-12 " >
+            <nav class="navbar navbar-expand-sm navbar-light bg-light" >
                 <a class="navbar-brand" href="todo">ToDo Manager</a>
                 <span class="ml-auto" style="margin-right: 2.5vw;"><i>{{userName}}</i></span>
                 <button class="navbar-toggler" type="button" data-toggle="collapse"
@@ -42,9 +42,9 @@
 
 
     <!-- -------------- open lists options--------------- -->
-    <div class="container-fluid" style="margin-top: 8px;">
+    <div class="container-fluid" style="margin-top: 8px; background-color: rgb(102, 100, 100);">
         <div class="row">
-            <div class="col-4 firstElement">
+            <div class="col-md-4 col-sm-12 firstElement">
                 <div class="row divider" style="padding : 4px;">
                     <button class="col-5 buttonHeight button" style="border-right: 1px solid grey"
                         (click)="getUserOpenLists(userId)">
@@ -62,13 +62,15 @@
                 <div class="row divider" style="padding : 10px 0 15px 0;">
                     <div class="col-12">
                         <h5 style="margin-bottom: 10px;">Open todo lists</h5>
+                        <span>select a list for details</span>
                     </div>
-                    <div #scrollMe [scrollTop]="0" class="openList">
-                        <div class="col-12 d-flex justify-content-start">
+                    <div #scrollMe [scrollTop]="0" class="openList" >
+                        <div class="col-12 d-flex justify-content-start" >
                             <button type="button" class="createListButton" data-toggle="modal"
                                 data-target="#createListModal">
                                 <fa-icon [icon]="plus"></fa-icon>&nbsp;&nbsp;create new list
                             </button>
+
                             <!-- Modal -->
                             <div class="modal fade" id="createListModal" tabindex="-1" role="dialog"
                                 aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -204,14 +206,15 @@
 
 
                 <!-- -------------- done lists options--------------- -->
-                <div class="row divider" style="padding : 10px 0 15px 0;">
+                <div class="row divider" style="padding : 10px 0 15px 0;" style="background-color: rgb(102, 100, 100);">
                     <div class="col-8">
                         <h5 style="margin-bottom: 10px;">done todo lists</h5>
                     </div>
-                    <div #scrollMe [scrollTop]="0" class="openList">
+                    <div #scrollMe [scrollTop]="0" class="doneList" >
                         <div *ngFor="let oldList of userOldLists" class="col-12">
-                            <div class="row" style="padding-left: 10px;">
-                                <div class="col-9 list" style="overflow: auto;">
+                            <div (click)="getCurrentList(list.listId, list.listOwner)" class="row"
+                                style="padding-left: 10px;">
+                                <div class="col-9 oldList" style="overflow: auto;">
                                     <div>
                                         <a class="listTitle">{{oldList.listTitle}}</a>
                                     </div>
@@ -249,13 +252,17 @@
 
             <!-- -------------- open Items options--------------- -->
 
-            <div class="col-5 secondElement">
+            <div class="col-md-5 col-sm-12 secondElement" style="background-color: rgb(253, 66, 66);">
 
-                <div class="row divider" style="padding : 10px 0 15px 0;">
+                <div class="row divider" style="padding : 10px 0 15px 0;" >
                     <div class="col-12">
-                        <h5 style="margin-bottom: 10px;">List Items</h5>
+
+                        <h4 style="margin-bottom: 10px;" *ngIf="currentList">List Items in : {{currentList.listTitle}}
+                        </h4>
+                        <h5 class="text-muted" *ngIf="currentList">description : {{currentList.listDescription}} </h5>
+                        <h6><b>Open Lists</b></h6>
                     </div>
-                    <div #scrollMe [scrollTop]="0" class="openList">
+                    <div #scrollMe [scrollTop]="0" class="openItem" >
                         <div class="col-12 d-flex justify-content-start">
                             <button type="button" class="createItemButton" data-toggle="modal"
                                 data-target="#createItemModal">
@@ -295,8 +302,8 @@
                                                 <div class="form-group">
                                                     <label>dueDate</label>
                                                     <input type="date" name="dueDate" class="form-control inputForm"
-                                                        [(ngModel)]="dueDate" #duedate="ngModel"
-                                                        placeholder="due by" required autofocus>
+                                                        [(ngModel)]="dueDate" #duedate="ngModel" placeholder="due by"
+                                                        required autofocus>
                                                 </div>
                                                 <div [hidden]="duedate.valid || duedate.pristine"
                                                     class="alert alert-danger">please select a due date</div>
@@ -313,132 +320,296 @@
                             </div>
                         </div>
                         <div *ngFor="let item of listItems" class="col-12">
-                            <div (click)="getCurrentItem(item.itemId)" class="row"
-                                style="padding-left: 10px;">
-                                <div class="col-9 list" style="overflow: auto;">
-                                    <div>
-                                        <a class="listTitle">{{item.title}}</a>
-                                    </div>
-
-                                </div>
-                                <div class="col-2" style="padding-left: 0;">
-                                    <div class="btn-group">
-                                        <button (click)="getCurrentItem(item.itemId)" type="button"
-                                            style="padding-left: 5px;" class="btn dropdown-toggle listActions"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <fa-icon [icon]="optionsIcon"></fa-icon>
-                                        </button>
-                                        <div class="dropdown-menu">
-                                            <a class="dropdown-item" type="button" data-toggle="modal"
-                                                data-target="#editItemModal">
-                                                <fa-icon [icon]="editIcon"></fa-icon>edit item
-                                            </a>
-                                            <a class="dropdown-item" (click)="deleteExistingList()">
-                                                <fa-icon [icon]="recycleIcon"></fa-icon>delete item
-                                            </a>
-                                            <a class="dropdown-item" (click)="undoListAction()">
-                                                <fa-icon [icon]="undoIcon"></fa-icon>undo
-                                            </a>
-                                            <a class="dropdown-item" (click)="redoListAction()">
-                                                <fa-icon [icon]="redoIcon"></fa-icon>redo
-                                            </a>
-                                            <a class="dropdown-item" (click)="markListAsDone()">
-                                                <fa-icon [icon]="markAsDone"></fa-icon>item done
-                                            </a>
-                                        </div>
-                                        <div class="modal fade" id="editItemModal" tabindex="-1" role="dialog"
-                                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLabel">Edit List Item</h5>
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                            aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
+                            <div class="row"  *ngIf="item.parent==''" style="padding-left: 10px;">
+                                <div class="col-11 item">
+                                    <div class="row">
+                                        <a (click)="getCurrentItem(item.itemId)" type="button" class="itemTitle"
+                                            data-toggle="modal" data-target="#itemModal">
+                                            {{item.title}}
+                                        </a>
+                                    </div>                                    
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="itemModal" tabindex="-1" role="dialog"
+                                        aria-labelledby="itemDetailsModal" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <div class="col-8">
+                                                        <h3 class="modal-title" id="itemDetailsModal">Item Title :
+                                                            {{currentItem.title}}</h3>
                                                     </div>
-                                                    <div class="modal-body">
-                                                        <form>
-                                                            <div class="form-group">
-                                                                <label>List Item Title</label>
-                                                                <input type="text" name="title"
-                                                                    class="form-control inputForm"
-                                                                    [(ngModel)]="title" #itemTitle="ngModel"
-                                                                    placeholder="{{currentItem.title}}" required
-                                                                    autofocus>
-                                                            </div>
-                                                            <div class="form-group">
+                                                    <div class="col-2">
+                                                        <div class="btn-group">
+                                                            <button type="button" style="padding-left: 5px;"
+                                                                class="btn btn-primary dropdown-toggle listActions"
+                                                                data-toggle="dropdown" aria-haspopup="true"
+                                                                aria-expanded="false">
+                                                                <fa-icon [icon]="optionsIcon"></fa-icon>
 
-                                                                <label>List Item Description</label>
-                                                                <input type="text" name="description"
-                                                                    class="form-control inputForm "
-                                                                    [(ngModel)]="description"
-                                                                    #itemdescription="ngModel"
-                                                                    placeholder="{{currentItem.description}}"
-                                                                    required autofocus>
+                                                            </button>
+                                                            <div class="dropdown-menu">
+                                                                <a class="dropdown-item" type="button"
+                                                                    data-toggle="modal" data-target="#editItemModal">
+                                                                    <fa-icon [icon]="editIcon"></fa-icon>edit item
+                                                                </a>
+                                                                <a class="dropdown-item" type="button"
+                                                                     data-toggle="modal"
+                                                                    data-target="#createSubToDo">
+                                                                    <fa-icon [icon]="subTodo"></fa-icon>create a sub
+                                                                    todo item
+                                                                </a>
+                                                                <a class="dropdown-item" data-dismiss="modal"
+                                                                    (click)="deleteExistingListItem()">
+                                                                    <fa-icon   [icon]="recycleIcon"></fa-icon>delete item
+                                                                </a>
+                                                                <a class="dropdown-item"  data-dismiss="modal"
+                                                                    (click)="undoExistingListItemAction()">
+                                                                    <fa-icon  [icon]="undoIcon"></fa-icon>undo
+                                                                </a>
+                                                                <a class="dropdown-item" data-dismiss="modal"
+                                                                    (click)="redoExistingListItemAction()">
+                                                                    <fa-icon   [icon]="redoIcon"></fa-icon>redo
+                                                                </a>
+                                                                <a class="dropdown-item" data-dismiss="modal" (click)="markListItemDone()">
+                                                                    <fa-icon   [icon]="markAsDone"></fa-icon>item done
+                                                                </a>
                                                             </div>
-                                                            <div class="form-group">
+                                                            <div (click)="getCurrentItem(currentItem.itemId)"
+                                                                class="modal fade" id="editItemModal" tabindex="-1"
+                                                                role="dialog" aria-labelledby="editItemModal"
+                                                                aria-hidden="true">
+                                                                <div class="modal-dialog" role="document">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="editItemModal">
+                                                                                Edit List Item</h5>
+                                                                            <button type="button" class="close"
+                                                                                data-dismiss="modal" aria-label="Close">
+                                                                                <span aria-hidden="true">&times;</span>
+                                                                            </button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <form>
+                                                                                <div class="form-group">
+                                                                                    <label>List Item Title</label>
+                                                                                    <input type="text" name="title"
+                                                                                        class="form-control inputForm"
+                                                                                        [(ngModel)]="title"
+                                                                                        #itemTitle="ngModel"
+                                                                                        placeholder="{{currentItem.title}}"
+                                                                                        required autofocus>
+                                                                                </div>
+                                                                                <div class="form-group">
 
-                                                                <label>List Item Due Date</label>
-                                                                <input type="date" name="dueDate"
-                                                                    class="form-control inputForm "
-                                                                    [(ngModel)]="dueDate"
-                                                                    #itemdescription="ngModel"
-                                                                    placeholder="due date"
-                                                                    required autofocus>
+                                                                                    <label>List Item Description</label>
+                                                                                    <input type="text"
+                                                                                        name="description"
+                                                                                        class="form-control inputForm "
+                                                                                        [(ngModel)]="description"
+                                                                                        #itemdescription="ngModel"
+                                                                                        placeholder="{{currentItem.description}}"
+                                                                                        required autofocus>
+                                                                                </div>
+                                                                                <div class="form-group">
+
+                                                                                    <label>List Item Due Date</label>
+                                                                                    <input type="date" name="dueDate"
+                                                                                        class="form-control inputForm "
+                                                                                        [(ngModel)]="dueDate"
+                                                                                        #itemdescription="ngModel"
+                                                                                        placeholder="due date" required
+                                                                                        autofocus>
+                                                                                </div>
+                                                                            </form>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button"
+                                                                                class="btn btn-secondary"
+                                                                                data-dismiss="modal">Cancel</button>
+                                                                            <button class="btn btn-primary"
+                                                                                style="margin-right: 10px;"
+                                                                                type="button" data-dismiss="modal"
+                                                                                (click)="editExistingListItem(currentList.listId)">edit</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                        </form>
+                                                            <div class="modal fade" id="createSubToDo" tabindex="-1"
+                                                                role="dialog" aria-labelledby="subToDoModal"
+                                                                aria-hidden="true">
+                                                                <div class="modal-dialog" role="document">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title"
+                                                                                id="subToDoModal">Create a sub todo item
+                                                                            </h5>
+                                                                            <button type="button" class="close"
+                                                                                data-dismiss="modal" aria-label="Close">
+                                                                                <span aria-hidden="true">&times;</span>
+                                                                            </button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <form>
+                                                                                <div class="form-group">
+                                                                                    <label>Item Title</label>
+                                                                                    <input type="text" name="title"
+                                                                                        class="form-control inputForm"
+                                                                                        [(ngModel)]="title"
+                                                                                        #itemtitle="ngModel"
+                                                                                        placeholder="list item title here"
+                                                                                        required autofocus>
+                                                                                </div>
+                                                                                <div [hidden]="itemtitle.valid || itemtitle.pristine"
+                                                                                    class="alert alert-danger">please
+                                                                                    enter a list item title</div>
+                                                                                <div class="form-group">
+
+                                                                                    <label>Item Description</label>
+                                                                                    <input type="text"
+                                                                                        name="description"
+                                                                                        class="form-control inputForm "
+                                                                                        [(ngModel)]="description"
+                                                                                        #itemdescription="ngModel"
+                                                                                        placeholder="description of the list item"
+                                                                                        required autofocus>
+                                                                                </div>
+                                                                                <div [hidden]="itemdescription.valid || itemdescription.pristine"
+                                                                                    class="alert alert-danger">please
+                                                                                    enter list item description</div>
+                                                                                <div class="form-group">
+                                                                                    <label>dueDate</label>
+                                                                                    <input type="date" name="dueDate"
+                                                                                        class="form-control inputForm"
+                                                                                        [(ngModel)]="dueDate"
+                                                                                        #duedate="ngModel"
+                                                                                        placeholder="due by" required
+                                                                                        autofocus>
+                                                                                </div>
+                                                                                <div [hidden]="duedate.valid || duedate.pristine"
+                                                                                    class="alert alert-danger">please
+                                                                                    select a due date</div>
+                                                                            </form>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button"
+                                                                                class="btn btn-secondary"
+                                                                                data-dismiss="modal">Cancel</button>
+                                                                            <button class="btn btn-primary"
+                                                                                style="margin-right: 10px;"
+                                                                                type="button" data-dismiss="modal"
+                                                                                (click)="createListItem(currentItem.itemId)">create sub
+                                                                                todo item</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-dismiss="modal">Cancel</button>
-                                                        <button class="btn btn-primary" style="margin-right: 10px;"
-                                                            type="button" data-dismiss="modal"
-                                                            (click)="editExistingList(currentList.listId)">edit</button>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <h5>Item Description : {{currentItem.description}}</h5>
+                                                    <h5>Item Due Date : {{currentItem.dueDate}}</h5>
+                                                    <div class="row"  *ngFor="let childItem of listItems"> 
+                                                        <div class="col-10" *ngIf = "childItem.parent == currentItem.itemId" >
+                                                            
+                                                            <div class="row subItem">
+                                                                <form style="width : 50vw;">
+                                                                    <input type="checkbox">
+                                                                    <a>{{childItem.title}} :</a>
+                                                                    <a>{{childItem.description}}</a>
+                                                                </form>                                                                
+                                                            </div>
+                                                            
+                                                        </div>
                                                     </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">Close</button>
+                                                    
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
+                            
                         </div>
                     </div>
                 </div>
-                <!-- -------------- open lists options end--------------- -->
+                <!-- -------------- open lists item options end--------------- -->
 
 
-                <!-- -------------- done lists options--------------- -->
+                <!-- -------------- done lists item options start--------------- -->
                 <div class="row divider" style="padding : 10px 0 15px 0;">
                     <div class="col-8">
-                        <h5 style="margin-bottom: 10px;">done todo lists</h5>
+                        <h5 style="margin-bottom: 10px;">done todo lists items</h5>
                     </div>
-                    <div #scrollMe [scrollTop]="0" class="openList">
-                        <div *ngFor="let oldList of userOldLists" class="col-12">
+                    <div #scrollMe [scrollTop]="0" class="openItem" >
+                        <div *ngFor="let oldItem of listDoneItems" class="col-12">
                             <div class="row" style="padding-left: 10px;">
-                                <div class="col-9 list" style="overflow: auto;">
+                                <div class="col-11 list" style="overflow: auto;">
                                     <div>
-                                        <a class="listTitle">{{oldList.listTitle}}</a>
+                                        <a (click)="getCurrentItem(oldItem.itemId)" type="button" class="itemTitle"
+                                            data-toggle="modal" data-target="#itemDoneModal">
+                                            {{oldItem.title}}
+                                        </a>                                        
                                     </div>
                                 </div>
-                                <div class="col-2" style="padding-left: 0;">
-                                    <div class="btn-group">
-                                        <button (click)="getCurrentList(oldList.listId, oldList.listOwner)"
-                                            type="button" style="padding-left: 5px;"
-                                            class="btn dropdown-toggle listActions" data-toggle="dropdown"
-                                            aria-haspopup="true" aria-expanded="false">
-                                            <fa-icon [icon]="optionsIcon"></fa-icon>
-                                        </button>
-                                        <div class="dropdown-menu">
-                                            <a class="dropdown-item" (click)="deleteExistingList()">
-                                                <fa-icon [icon]="recycleIcon"></fa-icon>delete list
-                                            </a>
-                                            <a class="dropdown-item" (click)="markListAsOpen()">
-                                                <fa-icon [icon]="markAsDone"></fa-icon>re-open list
-                                            </a>
+                                <div class="modal fade" id="itemDoneModal" tabindex="-1" role="dialog"
+                                        aria-labelledby="itemDoneDetailsModal" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <div class="col-8">
+                                                        <h3 class="modal-title" id="itemDoneDetailsModal">Item Title :
+                                                            {{currentItem.title}}</h3>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <div class="btn-group">
+                                                            <button type="button" style="padding-left: 5px;"
+                                                                class="btn btn-primary dropdown-toggle listActions"
+                                                                data-toggle="dropdown" aria-haspopup="true"
+                                                                aria-expanded="false">
+                                                                <fa-icon [icon]="optionsIcon"></fa-icon>
+
+                                                            </button>
+                                                            <div class="dropdown-menu">
+                                                                
+                                                                
+                                                                <a class="dropdown-item" data-dismiss="modal"
+                                                                    (click)="deleteExistingListItem()">
+                                                                    <fa-icon   [icon]="recycleIcon"></fa-icon>delete item
+                                                                </a>
+                                                                <a class="dropdown-item" data-dismiss="modal" (click)="markListItemOpen()">
+                                                                    <fa-icon   [icon]="markAsDone"></fa-icon>re-open item
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <h5>Item Description : {{currentItem.description}}</h5>
+                                                    <h5>Item Due Date : {{currentItem.dueDate}}</h5>
+                                                    
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">Close</button>
+                                                    
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -454,74 +625,36 @@
 
 
             <!-- ----------------third element start -------------- -->
-            <div class="col-3 thirdElement">
-                <!-- <div class ="row divider" style="padding : 4px;" >
-                <button class="col-5 buttonHeight button" style="border-right: 1px solid grey">All</button>
-                <button class="col-7 buttonHeight button">Friends</button>
-            </div> -->
-                <div class="row divider" style="padding : 10px 0 15px 0;">
+            <!-- ----------------users----------------------------- -->
 
+
+            <div class="col-md-3 col-sm-12 thirdElement" >
+                <div class="row" style="padding : 10px 0 15px 0;" style="background-color: rgb(102, 100, 100);">
                     <div class="col-12">
-                        <h5 style="margin-bottom: 10px;">Online Users</h5>
+                        <h5 style="margin-bottom: 10px;">ToDo Manager Users</h5>                        
                     </div>
-                    <div #scrollMe [scrollTop]="0" class="openList">
-                        <!-- <div class="col-12 d-flex justify-content-start">                    
-                    <button class="createListButton"><fa-icon [icon]="plus"></fa-icon>&nbsp;&nbsp;create new list</button>
-                </div>  -->
-                        <div *ngFor="let friend of friendList" class="col-12">
-                            <div class="row" style="padding-left: 10px;">
-                                <div class="col-9 list" style="overflow: auto;">
-                                    <div>
-                                        <a class="listTitle">{{friend.friendName}}</a>
-                                    </div>
+                    <div #scrollMe [scrollTop]="0" class="todoUsers" >
+                        <div *ngFor="let user of toDoUsersList" class="col-12">
+                            <div class="row" *ngFor="let friend of friendList" style="padding-left: 10px;">
+                                <div class="col-12" *ngIf="friend.friendId != user.userId && user.userId != userId" style="overflow: auto; font-size: 0.8rem; padding : 0 0 5px 0;">                                    
+                                    <button class="btn-light col-7">
+                                        {{user.firstName}} {{user.lastName}}
+                                    </button> 
+                                    <button class="btn-primary col-5" style="font-size: 0.6rem; padding : 0 0 5px 0;" (click)="sendFriendRequest(user.userId)">
+                                        send request
+                                    </button>                                    
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div class="row divider" style="padding : 10px 0 15px 0;">
-                    <div class="col-8">
-                        <h5 style="margin-bottom: 10px;">done todo lists</h5>
-                    </div>
-                    <div #scrollMe [scrollTop]="0" class="openList">
-                        <div *ngFor="let oldList of userOldLists" class="col-12">
-                            <div class="row" style="padding-left: 10px;">
-                                <div class="col-9 list" style="overflow: auto;">
-                                    <div>
-                                        <a class="listTitle"> {{oldList.listTitle}}</a>
-                                    </div>
-
-                                </div>
-                                <div class="col-2" style="padding-left: 0;">
-                                    <div class="btn-group">
-                                        <button type="button" style="padding-left: 5px;"
-                                            class="btn dropdown-toggle listActions" data-toggle="dropdown"
-                                            aria-haspopup="true" aria-expanded="false">
-                                            <fa-icon [icon]="optionsIcon"></fa-icon>
-                                        </button>
-                                        <div class="dropdown-menu">
-                                            <a class="dropdown-item" href="#">
-                                                <fa-icon [icon]="editIcon"></fa-icon>edit list
-                                            </a>
-                                            <a class="dropdown-item" href="#">
-                                                <fa-icon [icon]="recycleIcon"></fa-icon>delete list
-                                            </a>
-                                            <a class="dropdown-item" href="#">
-                                                <fa-icon [icon]="undoIcon"></fa-icon>undo
-                                            </a>
-                                            <a class="dropdown-item" href="#">
-                                                <fa-icon [icon]="redoIcon"></fa-icon>redo
-                                            </a>
-                                            <a class="dropdown-item" href="#">
-                                                <fa-icon [icon]="markAsDone"></fa-icon>re open list
-                                            </a>
-                                        </div>
-                                    </div>
+                            <div class="row" *ngIf="noFriends" style="padding-left: 10px;">
+                                <div class="col-12" *ngIf="user.userId != userId" style="overflow: auto; font-size: 0.8rem; padding : 0 0 5px 0;">
+                                    <button class="btn-light col-7">
+                                        {{user.firstName}} {{user.lastName}}
+                                    </button> 
+                                    <button class="btn-primary col-5" style="font-size: 0.6rem; padding : 0 0 5px 0;" (click)="sendFriendRequest(user.userId)">
+                                        send request
+                                    </button>                                    
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -531,3 +664,10 @@
 
 
 </div>
+
+
+
+
+
+
+

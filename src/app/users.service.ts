@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from '@angular/common/http';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ export class UsersService {
 
   public userUrl = "http://localhost:3000/api/v1/users"
 
-  constructor(private _http : HttpClient) { }
+  constructor(private _http : HttpClient, private cookies : CookieService) { }
 
 
   // signup user
@@ -82,5 +83,16 @@ export class UsersService {
      
      return this._http.put(`${this.userUrl}/editPassword?authToken=${data.authToken}`, param3);
    }
+
+   // for getting single user details
+   public getSelectedUserDetails(data): any{
+    let param4 = new HttpParams()
+    .set('userId', data.userId)
+
+    return this._http.put(`${this.userUrl}/getSingleUser?authToken=${this.cookies.get('authToken')}`, param4);
+
+   }
+
+
 
 }

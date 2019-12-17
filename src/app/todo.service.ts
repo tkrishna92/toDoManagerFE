@@ -128,7 +128,7 @@ export class TodoService {
    let param9 = new HttpParams()
    .set('itemId', data.itemId)
    .set('listOwnerId', data.listOwnerId)
-
+    console.log(param9);
    return this._http.put(`${this.todoUrl}/markItemAsOpen?authToken=${this.cookies.get('authToken')}`, param9);
 
  }
