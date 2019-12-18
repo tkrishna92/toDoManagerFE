@@ -16,16 +16,21 @@
     border-right-style: inset;
 }
 
-/* .divider{
+.divider{
     border-bottom-style: groove;
-        
-} */
+    width:80%;        
+}
+
+.itemDivider{
+    border-bottom-style: groove;
+    width:50%; 
+}
 
 
 
 .openList{
     height: 30vh;
-    width : 80%;
+    width : 100%;
     padding-bottom: 15px;
     overflow: auto;
     
@@ -34,7 +39,7 @@
 
 .doneList{
     height: 28vh;
-    width : 80%;
+    width : 100%;
     padding-bottom: 15px;
     overflow: auto;
     
@@ -144,7 +149,7 @@
     margin-top: 5px;
     padding : 5px;
     border-radius: 2vmax;
-    box-shadow: 1px 1px 1.5px 1px rgb(51, 44, 44);
+    box-shadow: 1px 1px 1.5px 1px rgb(255, 53, 53);
     height: 2.5rem;
     background-color: white;
 }

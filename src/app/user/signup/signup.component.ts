@@ -52,6 +52,8 @@ export class SignupComponent implements OnInit {
     }else if(!this.password){
       this.toaster.warning("please enter password");
     }else { 
+      data['countryCode'] = this.countryPhoneCode;
+      console.log(data);
       this._http.signupUser(data).subscribe(
         data =>{
           console.log(data);

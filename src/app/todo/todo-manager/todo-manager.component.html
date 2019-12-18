@@ -1,3 +1,8 @@
+<ngx-spinner bdOpacity = 0.9 bdColor = "#333" size = "default"
+color = "#fff" type = "ball-rotate" [fullScreen] = "true">
+<p style="color: white" > Loading... </p>
+</ngx-spinner>
+
 <div class="container-fluid" style="background-color: rgb(102, 100, 100);">
     <div class="row">
         <div class="col-12 " >
@@ -45,9 +50,10 @@
     <div class="container-fluid" style="margin-top: 8px; background-color: rgb(102, 100, 100);">
         <div class="row">
             <div class="col-md-4 col-sm-12 firstElement">
-                <div class="row divider" style="padding : 4px;">
+                <div class="row " style="padding : 4px;">
                     <button class="col-5 buttonHeight button" style="border-right: 1px solid grey"
-                        (click)="getUserOpenLists(userId)">
+                        (click)="getSelectedUserOpenLists(userId)"
+                        (click)="getSelectedUserDoneLists(userId)">
                         My Todo's
                     </button>
                     <button class="col-7 buttonHeight button" type="button" id="dropdownMenuButton"
@@ -56,15 +62,17 @@
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <a class="dropdown-item divider" *ngFor="let friend of friendList"
-                            (click)="getSelectedUserOpenLists(friend.friendId)">{{friend.friendName}}</a>
+                            (click)="getSelectedUserOpenLists(friend.friendId)"
+                            (click)="getSelectedUserDoneLists(friend.friendId)">
+                            {{friend.friendName}}</a>
                     </div>
                 </div>
-                <div class="row divider" style="padding : 10px 0 15px 0;">
+                <div class="row " style="padding : 10px 0 15px 0;">
                     <div class="col-12">
-                        <h5 style="margin-bottom: 10px;">Open todo lists</h5>
-                        <span>select a list for details</span>
+                        <h5 class="divider" style="margin-bottom: 10px; color: white;">Open todo lists</h5>
+                        <span style="color: rgb(184, 182, 182)">select a list for details</span>
                     </div>
-                    <div #scrollMe [scrollTop]="0" class="openList" >
+                    <div  #scrollMe [scrollTop]="0" class="openList" >
                         <div class="col-12 d-flex justify-content-start" >
                             <button type="button" class="createListButton" data-toggle="modal"
                                 data-target="#createListModal">
@@ -114,21 +122,21 @@
                                 </div>
                             </div>
                         </div>
-                        <div *ngFor="let list of userLists" class="col-12">
-                            <div (click)="getCurrentList(list.listId, list.listOwner)" class="row"
+                        <div (keydown)="undoListActionOnKeyPress($event)" *ngFor="let list of userLists" class="col-12">
+                            <div class="row"
                                 style="padding-left: 10px;">
                                 <div class="col-9 list" style="overflow: auto;">
                                     <div>
-                                        <a class="listTitle">{{list.listTitle}}</a>
+                                        <a class="listTitle"  (click)="getCurrentList(list.listId, list.listOwner)" >{{list.listTitle}}</a>
                                     </div>
 
                                 </div>
                                 <div class="col-2" style="padding-left: 0;">
                                     <div class="btn-group">
-                                        <button (click)="getCurrentList(list.listId, list.listOwner)" type="button"
-                                            style="padding-left: 5px;" class="btn dropdown-toggle listActions"
+                                        <button type="button"
+                                            style="padding-left: 5px; font-size: 1.2rem; color:rgb(255, 88, 88);" class="btn dropdown-toggle listActions"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <fa-icon [icon]="optionsIcon"></fa-icon>
+                                            <fa-icon [icon]="optionsIcon" ></fa-icon>
                                         </button>
                                         <div class="dropdown-menu">
                                             <a class="dropdown-item" type="button" data-toggle="modal"
@@ -206,14 +214,14 @@
 
 
                 <!-- -------------- done lists options--------------- -->
-                <div class="row divider" style="padding : 10px 0 15px 0;" style="background-color: rgb(102, 100, 100);">
-                    <div class="col-8">
-                        <h5 style="margin-bottom: 10px;">done todo lists</h5>
+                <div class="row" style="padding : 10px 0 15px 0;" style="background-color: rgb(150, 148, 148);">
+                    <div class="col-8 divider">
+                        <h5 style="margin-bottom: 10px; color : rgb(231, 225, 225)">My done todo lists</h5>
                     </div>
                     <div #scrollMe [scrollTop]="0" class="doneList" >
                         <div *ngFor="let oldList of userOldLists" class="col-12">
-                            <div (click)="getCurrentList(list.listId, list.listOwner)" class="row"
-                                style="padding-left: 10px;">
+                            <div (click)="getCurrentList(oldList.listId, oldList.listOwner)" class="row"
+                                style="padding-left: 10px; ">
                                 <div class="col-9 oldList" style="overflow: auto;">
                                     <div>
                                         <a class="listTitle">{{oldList.listTitle}}</a>
@@ -222,7 +230,7 @@
                                 <div class="col-2" style="padding-left: 0;">
                                     <div class="btn-group">
                                         <button (click)="getCurrentList(oldList.listId, oldList.listOwner)"
-                                            type="button" style="padding-left: 5px;"
+                                            type="button" style="padding-left: 5px; font-size: 1.1rem; color:rgb(255, 98, 98);"
                                             class="btn dropdown-toggle listActions" data-toggle="dropdown"
                                             aria-haspopup="true" aria-expanded="false">
                                             <fa-icon [icon]="optionsIcon"></fa-icon>
@@ -254,13 +262,13 @@
 
             <div class="col-md-5 col-sm-12 secondElement" style="background-color: rgb(253, 66, 66);">
 
-                <div class="row divider" style="padding : 10px 0 15px 0;" >
+                <div class="row" style="padding : 10px 0 15px 0;" >
                     <div class="col-12">
 
-                        <h4 style="margin-bottom: 10px;" *ngIf="currentList">List Items in : {{currentList.listTitle}}
-                        </h4>
-                        <h5 class="text-muted" *ngIf="currentList">description : {{currentList.listDescription}} </h5>
-                        <h6><b>Open Lists</b></h6>
+                        <h5 style="margin-bottom: 10px;" *ngIf="currentList">List Items in : {{currentList.listTitle}}
+                        </h5>
+                        <h5 *ngIf="currentList">description : {{currentList.listDescription}} </h5>
+                        <h6 class="itemDivider"><b>Open Lists</b></h6>
                     </div>
                     <div #scrollMe [scrollTop]="0" class="openItem" >
                         <div class="col-12 d-flex justify-content-start">
@@ -336,7 +344,14 @@
                                                 <div class="modal-header">
                                                     <div class="col-8">
                                                         <h3 class="modal-title" id="itemDetailsModal">Item Title :
-                                                            {{currentItem.title}}</h3>
+                                                            {{currentItem.title}}
+                                                        </h3>
+                                                        <div class="text-muted">
+                                                            created by : {{authorData.firstName}} {{authorData.lastName}}
+                                                        </div>
+                                                        <div class="text-muted" *ngIf="modifierData">
+                                                            modified by : {{modifierData.firstName}} {{modifierData.lastName}}
+                                                        </div>
                                                     </div>
                                                     <div class="col-2">
                                                         <div class="btn-group">
@@ -546,14 +561,14 @@
 
 
                 <!-- -------------- done lists item options start--------------- -->
-                <div class="row divider" style="padding : 10px 0 15px 0;">
-                    <div class="col-8">
-                        <h5 style="margin-bottom: 10px;">done todo lists items</h5>
+                <div class="row" style="padding : 10px 0 15px 0;">
+                    <div class="col-10 ">
+                        <h5 class="divider" style="margin-bottom: 10px;">done todo lists items</h5>
                     </div>
                     <div #scrollMe [scrollTop]="0" class="openItem" >
                         <div *ngFor="let oldItem of listDoneItems" class="col-12">
                             <div class="row" style="padding-left: 10px;">
-                                <div class="col-11 list" style="overflow: auto;">
+                                <div class="col-11 item" style="overflow: auto;">
                                     <div>
                                         <a (click)="getCurrentItem(oldItem.itemId)" type="button" class="itemTitle"
                                             data-toggle="modal" data-target="#itemDoneModal">
@@ -631,26 +646,26 @@
             <div class="col-md-3 col-sm-12 thirdElement" >
                 <div class="row" style="padding : 10px 0 15px 0;" style="background-color: rgb(102, 100, 100);">
                     <div class="col-12">
-                        <h5 style="margin-bottom: 10px;">ToDo Manager Users</h5>                        
+                        <h5 style="margin-bottom: 10px; color: rgb(163, 162, 162)" >ToDo Manager Users</h5>                        
                     </div>
                     <div #scrollMe [scrollTop]="0" class="todoUsers" >
                         <div *ngFor="let user of toDoUsersList" class="col-12">
                             <div class="row" *ngFor="let friend of friendList" style="padding-left: 10px;">
                                 <div class="col-12" *ngIf="friend.friendId != user.userId && user.userId != userId" style="overflow: auto; font-size: 0.8rem; padding : 0 0 5px 0;">                                    
-                                    <button class="btn-light col-7">
+                                    <button class="btn-light col-7" style="background-color:rgb(199, 195, 195); border-radius: 4px;">
                                         {{user.firstName}} {{user.lastName}}
                                     </button> 
-                                    <button class="btn-primary col-5" style="font-size: 0.6rem; padding : 0 0 5px 0;" (click)="sendFriendRequest(user.userId)">
+                                    <button class="btn-primary col-5" style="font-size: 0.6rem; padding : 0 0 5px 0; border-radius: 4px;" (click)="sendFriendRequest(user.userId)">
                                         send request
                                     </button>                                    
                                 </div>
                             </div>
                             <div class="row" *ngIf="noFriends" style="padding-left: 10px;">
                                 <div class="col-12" *ngIf="user.userId != userId" style="overflow: auto; font-size: 0.8rem; padding : 0 0 5px 0;">
-                                    <button class="btn-light col-7">
+                                    <button class="btn-light col-7" style="background-color: rgb(199, 195, 195); border-radius: 4px;">
                                         {{user.firstName}} {{user.lastName}}
                                     </button> 
-                                    <button class="btn-primary col-5" style="font-size: 0.6rem; padding : 0 0 5px 0;" (click)="sendFriendRequest(user.userId)">
+                                    <button class="btn-primary col-5" style="font-size: 0.6rem; padding : 0 0 5px 0; border-radius: 4px;" (click)="sendFriendRequest(user.userId)">
                                         send request
                                     </button>                                    
                                 </div>

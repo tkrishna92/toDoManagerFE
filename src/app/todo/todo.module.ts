@@ -7,6 +7,7 @@ import { RouterModule } from '@angular/router';
 import { ToastrModule } from 'ngx-toastr';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SharedModule } from '../shared/shared.module';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 
 
@@ -17,6 +18,7 @@ import { SharedModule } from '../shared/shared.module';
     BrowserAnimationsModule,
     FormsModule, 
     FontAwesomeModule,
+    NgxSpinnerModule,
     ToastrModule.forRoot(),
     RouterModule.forChild([
       {path : 'todo', component : TodoManagerComponent}

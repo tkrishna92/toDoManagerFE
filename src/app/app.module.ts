@@ -11,6 +11,7 @@ import { AppComponent } from './app.component';
  import {HttpClientModule} from '@angular/common/http';
  import {FormsModule} from '@angular/forms';
  import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+ import { NgxSpinnerModule} from "ngx-spinner";
 
 // external modules
 
@@ -44,6 +45,7 @@ import { FriendsService } from './friends.service';
     UserModule,
     SharedModule,
     FormsModule,
+    NgxSpinnerModule,
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
     RouterModule.forRoot([

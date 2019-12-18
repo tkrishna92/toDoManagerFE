@@ -85,13 +85,12 @@ export class UsersService {
    }
 
    // for getting single user details
-   public getSelectedUserDetails(data): any{
-    let param4 = new HttpParams()
+  public getSingleUserDetail(data): any{
+    const param4 = new HttpParams()
     .set('userId', data.userId)
 
-    return this._http.put(`${this.userUrl}/getSingleUser?authToken=${this.cookies.get('authToken')}`, param4);
-
-   }
+    return this._http.put(`${this.userUrl}/getSingleUser?authToken=${this.cookies.get('authToken')}`,param4);
+  }
 
 
 
